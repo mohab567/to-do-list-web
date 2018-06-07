@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>To Do List</title>
+    <meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.0.min.js"></script>
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+
+    
+
+    <script>
+
+        
+        function myConfirm()
+        {
+            var x = confirm("Are you sure ?");
+            if(x==true)
+            {
+                return true;
+            }
+            else return false;
+        }
+
+
+        function task(name,date,disc,mark){
+
+            this.name = name;
+            this.date = date;
+            this.disc=disc;
+            this.mark=mark;
+
+        }
+        var all = [];
+        var i;
+		
+		function strcmpName(a, b) {
+		var x=a.name;
+		var y=b.name;
+		var n = x.localeCompare(y);
+		return n;
+        }
+		function datecmp(a,b){
+		if(a.date=="") return 1;
+		if(b.date=="") return -1;
+		return a.date.localeCompare(b.date);
+		}
+		function sortName(){
+		all.sort(strcmpName);
+		drawTable();
+		}
+		function sortDate(){
+		all.sort(datecmp);
+		drawTable();
+		}
+		
+		function deleteItem(val){
+		
+		if (myConfirm()){
+		all.splice(val,1);
+		drawTable();}
+		
+		}
+		function markComp(val){
+		all[val].mark="2";
+		drawTable();
+		
+		
+		}
+		function markArch(val){
+		all[val].mark="3";
+		drawTable();
+		
+		
+		}
+        function deleteSelect()
+        {
+            if(myConfirm())
+            {
+                var arr = document.getElementsByName('box');
+                var check;
+                for(var i = arr.length - 1; i >= 0; i--){
+                    if(arr[i].checked)
+                    {
+                        check=arr[i].value;
+                        all.splice(check, 1);
+						
+						
+                    }
+                }
+
+              drawTable();
+                
+            }
+
+        }
+
+        function addTask(){
+            var ne=new task(document.getElementById("newName").value,document.getElementById("newDate").value,document.getElementById("Discription").value,"1");
+			if(ne.name=="")
+		{
+		alert("Name feild is empty");
+		}
+		else{
+            all.push(ne);
+            drawTable();
+            undo();}
+        }
+		function editTask(val){
+		var ne=new task(document.getElementById("newName").value,document.getElementById("newDate").value,document.getElementById("Discription").value,"1");
+		if(ne.name=="")
+		{
+		alert("Name feild is empty");
+		}
+		else{
+            all[val]=ne;
+            drawTable();
+            undo();}
+		
+		}
+        function addNew() {
+            var stext="Name:<br><input type=\"text\" id=\"newName\" name=\"Name\"><br>";
+            stext+="due Date:<br><input type=\"date\" id=\"newDate\" name=\"date\"> <br>";
+            stext+="Discription:<br><input type=\"text\" id=\"Discription\" name=\"Discription\"><br>";
+            stext+="<input type=\"submit\" value=\"Submit\" onclick=\"addTask()\">"+"<input type=\"submit\" value=\"cancel\" onclick=\"undo()\">";
+            document.getElementById("addTable").innerHTML = stext;
+
+        }
+		function edit(val){
+		drawTable();
+		var stext="Name:<br><input type=\"text\" id=\"newName\" name=\"Name\" value=\""+all[val].name+"\"><br>";
+            stext+="due Date:<br><input type=\"date\" id=\"newDate\" name=\"date\" value=\""+all[val].date+"\"> <br>";
+            stext+="Discription:<br><input type=\"text\" id=\"Discription\" name=\"Discription\"value=\""+all[val].disc+"\"> <br>";
+            stext+="<input type=\"submit\" value=\"Submit\" onclick=\"editTask("+val+")\">"+"<input type=\"submit\" value=\"cancel\" onclick=\"undo()\">";
+            document.getElementById("addTable").innerHTML = stext;
+		
+		
+		
+		}
+        function undo(){
+            document.getElementById("addTable").innerHTML = "<table>";
+        }
+        function drawTable(){
+
+            var arr = document.getElementsByName('taskList');
+            var check;
+            for(var i = 0; i < arr.length; i++){
+                if(arr[i].checked)
+                    check = arr[i].value;
+            }
+
+            var text = "<table>";
+            text += "<th style=\"width:10%\">check box</th>";
+            text += "<th style=\"width:20%\">Task Name</th>";
+            text += "<th style=\"width:15%\">Date</th>";
+            text += "<th style=\"width:40%\">Discription</th>";
+			text += "<th style=\"width:12%\">Statue</th>";
+            text += "<th style=\'width:3%\'>" + "<div class='dropdown'>" +
+            "<label class='dropdown-toggle glyphicon glyphicon-wrench' data-toggle='dropdown' >"+"</label>"+
+            "<ul class='dropdown-menu dropdown-menu-right ' >" +
+            "<li>"+"<button type='button' class='btn btn-block btn-default' onclick='sortDate()'>"+"Sort By Date"+"</button>"+"</li>"+
+            "<li>"+"<button type='button' class='btn btn-block btn-default' onclick='sortName()'>"+"Sort By Name"+"</button>"+"</li>"+
+            "</ul>"+ "</div> "+ "</th>";
+            
+             if(check=="1"||check=="0")
+            {
+                for(i = 0; i< all.length; i++){
+                    if (all[i].mark=="1"){
+
+                        text += "<tr>";
+                        text += "<td><input type=\"checkbox\" Name=\"box\" value="+i+" onclick=\"checkValid()\"></td>";
+                        text += "<td>"+all[i].name + "</td>";
+                        text += "<td>"+all[i].date + "</td>";
+                        text += "<td>"+all[i].disc + "</td>";
+						text += "<td>In progress</td>";
+                        text += "<td>" + "<div class='dropdown'>" +
+                                "<span class='glyphicon glyphicon-option-horizontal dropdown-toggle' data-toggle='dropdown' hidden='hidden' >"+"</span>"+"</button>"+
+                                "<ul class='dropdown-menu dropdown-menu-right ' >" +
+                                "<li>"+"<button type='button' class='btn btn-block btn-warning' onclick='markArch("+i+")'>"+"Archive"+"</button>"+"</li>"+
+                                "<li>"+"<button type='button' class='btn btn-block btn-success' onclick='edit("+i+")'>"+"Edit Task"+"</button>"+"</li>"+
+                                "<li>"+"<button type='button' class='btn btn-block btn-danger' onclick='deleteItem("+i+")'>"+"Delete Task"+"</button>"+"</li>"+
+                                "<li>"+"<button type='button' class='btn btn-block btn-info' onclick='markComp("+i+")'>"+"Mark As Done"+"</button>"+"</li>"+
+                                "</ul>"+ "</div>" + "</td>";
+                        text += "</tr>";        }}
+                
+            }
+			 if(check=="3"||check=="0")
+            {
+                for(i = 0; i< all.length; i++){
+                    if (all[i].mark=="3"){
+                        text += "<tr>";
+                        text += "<td><input type=\"checkbox\" name=\"box\" value="+i+" onclick=\"checkValid()\"></td>";
+                        text += "<td>"+all[i].name + "</td>";
+                        text += "<td>"+all[i].date + "</td>";
+                        text += "<td>"+all[i].disc + "</td>";
+						text += "<td>Archived</td>";
+                        text += "<td>" + "<div class='dropdown'>" +
+                                "<span class='glyphicon glyphicon-option-horizontal dropdown-toggle' data-toggle='dropdown' hidden='hidden' >"+"</span>"+"</button>"+
+                                "<ul class='dropdown-menu dropdown-menu-right ' >" +
+                                
+                                "<li>"+"<button type='button' class='btn btn-block btn-success' onclick='edit("+i+")'>"+"Edit Task"+"</button>"+"</li>"+
+                                "<li>"+"<button type='button' class='btn btn-block btn-danger' onclick='deleteItem("+i+")'>"+"Delete Task"+"</button>"+"</li>"+
+                                "<li>"+"<button type='button' class='btn btn-block btn-info' onclick='markComp("+i+")'>"+"Mark As Done"+"</button>"+"</li>"+
+                                "</ul>"+ "</div>" + "</td>";
+                        text += "</tr>";        }}
+                
+
+            }
+            if(check=="2"||check=="0")
+            {
+                for(i = 0; i< all.length; i++){
+                    if (all[i].mark=="2"){
+                        text += "<tr>";
+                        text += "<td><input type=\"checkbox\" name=\"box\" value="+i+" onclick=\"checkValid()\"></td>";
+                        text += "<td>"+all[i].name + "</td>";
+                        text += "<td>"+all[i].date + "</td>";
+                        text += "<td>"+all[i].disc + "</td>";
+						text += "<td>Completed</td>";
+                        text += "<td>" + "<div class='dropdown'>" +
+                                "<span class='glyphicon glyphicon-option-horizontal dropdown-toggle' data-toggle='dropdown' hidden='hidden' >"+"</span>"+"</button>"+
+                                "<ul class='dropdown-menu dropdown-menu-right ' >" +
+                                "<li>"+"<button type='button' class='btn btn-block btn-warning' onclick='markArch("+i+")'>"+"Archive"+"</button>"+"</li>"+
+                                "<li>"+"<button type='button' class='btn btn-block btn-success' onclick='edit("+i+")'>"+"Edit Task"+"</button>"+"</li>"+
+                                "<li>"+"<button type='button' class='btn btn-block btn-danger' onclick='deleteItem("+i+")'>"+"Delete Task"+"</button>"+"</li>"+
+                                
+                                "</ul>"+ "</div>" + "</td>";
+                        text += "</tr>";        }}
+                }
+            
+			text+= "</table>";
+            document.getElementById("myTable").innerHTML = text;
+            document.getElementById("allbadge").innerHTML = all.length;
+            var inc=0;
+            for(i=0;i<all.length;i++)
+                if(all[i].mark=="1")
+                    inc++
+            document.getElementById("inbadge").innerHTML = inc;
+            var comc=0;
+            for(i=0;i<all.length;i++)
+                if(all[i].mark=="2")
+                    comc++
+            document.getElementById("compbadge").innerHTML = comc;
+            var archc=0;
+            for(i=0;i<all.length;i++)
+                if(all[i].mark=="3")
+                    archc++
+            document.getElementById("archbadge").innerHTML = archc;
+            checkValid();
+        }
+
+
+        window.onload = drawTable;
+
+        function checkValid()
+        {
+            undo();
+            var arr = document.getElementsByName('box');
+            var check=0;
+            for(i = 0; i < arr.length; i++){
+                if(arr[i].checked)
+                    check++;
+            }
+            if(check==0)
+                document.getElementById("+add").innerHTML = " <button type=\"button\" class=\"btn-default btn-block text-left\" onclick=\"addNew()\">"+"<span class=\"glyphicon glyphicon-plus\"></span>Add Task</button>";
+            else
+                document.getElementById("+add").innerHTML = " <button type=\"button\" class=\"btn-default btn-block text-left\" onclick=\"deleteSelect()\">"+"<span class=\"glyphicon glyphicon-plus\"></span>Delete Tasks</button>";
+        }
+
+    </script>
+    <style>
+        .container-fluid{
+
+
+
+        }
+        .col-fixed-240{
+            width:20%;
+            background:red;
+            position:fixed;
+            hight:auto;
+
+        }
+
+        .col-fixed-160{
+            margin-left:20%;
+            width:80%;
+            hight:auto;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+         table#myTable tr td div.dropdown { display:none;}
+  table#myTable tr:hover td div.dropdown { display:inline-block;}
+
+    </style>
+
+</head>
+<body>
+
+<div class="container-fluid">
+    <h1 class="page-header well text-center text-success" style="hight:10%">TO-DO-LIST</h1>
+    <div class="row" style="hight:90%">
+        <div class="col-fixed-240" style="background-color: #FF9999">
+            <h3 color="green" id="userName">User</h3>
+			     <div>
+           <button type="button" class="btn btn-default btn-lg" id="minSubmit">
+               <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Logout
+          </button>
+	</div><br>
+
+            <div class="radio">
+                <label><input type="radio" name="taskList" value="0" onclick="drawTable()" checked><strong>All Tasks <font color="gray" id="allbadge">0</font></strong></label>
+            </div>
+            <div class="radio">
+                <label><input type="radio" name="taskList" value="1" onclick="drawTable()"> <strong>In Progress <font color="gray" id="inbadge">0</font></strong></label>
+            </div>
+            <div class="radio">
+                <label><input type="radio" name="taskList" value="2" onclick="drawTable()"><strong>Completed Tasks <font color="gray" id="compbadge">0</font></strong></label>
+            </div>
+            <div class="radio">
+                <label><input type="radio" name="taskList" value="3" onclick="drawTable()"><strong>Archived <font color="gray" id="archbadge">0</font></strong></label>
+            </div>
+
+            <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        </div>
+
+        <div class="col-fixed-160"  style="background-color: white">
+            <table id="myTable" class="table table-hover">
+                <table id="addTable">
+                    <table id="+add">
+                        <table>
+                            </table>
+                        </table>
+                    </table>
+                </table>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>
